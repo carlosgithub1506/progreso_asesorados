@@ -1,7 +1,6 @@
 pandas
 streamlit
 matplotlib
-openpyxl
-odfpy  # Para leer archivos ODS
+odfpy  
 
 
