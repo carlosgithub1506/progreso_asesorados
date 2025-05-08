@@ -1,7 +1,8 @@
 import pandas as pd
 import streamlit as st
+import matplotlib
+matplotlib.use('Agg')  # Usar un backend sin interfaz gráfica
 import matplotlib.pyplot as plt
-
 
 # Titulo de la aplicación
 st.title("asesorados/plan_rutina_entrenamiento.ods")
