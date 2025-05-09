@@ -51,6 +51,15 @@ if uploaded_file is not None:
     st.pyplot(fig)
 
 
+
+       # --- Tabla completa de la rutina ---
+    st.subheader("📋 Tabla de la Rutina de Ejercicios")
+
+    df_rutina = pd.read_excel(uploaded_file, engine="odf", sheet_name="Rutina")
+    df_rutina_limpia = df_rutina.dropna(subset=["Ejercicio"])
+    st.dataframe(df_rutina_limpia)
+
+
         # --- Gráficos filtrables por Día y Grupo Muscular ---
     st.subheader("📊 Visualización Filtrada de la Rutina de Entrenamiento")
 
