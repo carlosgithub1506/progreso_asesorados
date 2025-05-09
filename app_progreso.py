@@ -5,7 +5,7 @@ matplotlib.use('Agg')  # Usar un backend sin interfaz gráfica
 import matplotlib.pyplot as plt
 
 # Titulo de la aplicación
-st.title("Evolucion plan rutina entrenamiento.ods")
+st.title("Evolucion plan rutina entrenamiento")
 
 # Subir archivo
 uploaded_file = st.file_uploader("Sube tu archivo de progreso (.ods)", type=["ods"])
