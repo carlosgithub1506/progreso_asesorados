@@ -79,13 +79,13 @@ if id_usuario:
                 if dia_seleccionado:
                     ejercicios_dia = df_rutina_limpia[df_rutina_limpia["Día"] == dia_seleccionado]
 
-                    st.markdown(f"###Ejercicios para el día **{dia_seleccionado}**")
+                    st.markdown(f"### Ejercicios para el día **{dia_seleccionado}**")
 
-                    st.subheader("📋 Tabla de ejercicios del día")
+                    st.subheader("Rutina de ejercicios del día")
                     st.dataframe(ejercicios_dia[["Ejercicio", "Grupo Muscular", "Series", "Repeticiones", "Peso (kg)", "Descanso (min)"]].reset_index(drop=True))
 
                     # Mostrar gráfico general del día
-                    st.subheader("📈 Resumen gráfico del día")
+                    st.subheader("📈 Resumen gráfico del volumen de series del día")
                     valores_agrupados = ejercicios_dia.groupby("Grupo Muscular")["Series"].sum()
 
                     if not valores_agrupados.empty:
