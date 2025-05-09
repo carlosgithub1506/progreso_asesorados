@@ -79,7 +79,7 @@ if id_usuario:
                 if dia_seleccionado:
                     ejercicios_dia = df_rutina_limpia[df_rutina_limpia["Día"] == dia_seleccionado]
 
-                    st.markdown(f"### Ejercicios para el día **{dia_seleccionado}**")
+                    #st.markdown(f"### Ejercicios para el día **{dia_seleccionado}**")
 
                     st.subheader("Rutina de ejercicios del día")
                     st.dataframe(ejercicios_dia[["Ejercicio", "Grupo Muscular", "Series", "Repeticiones", "Peso (kg)", "Descanso (min)"]].reset_index(drop=True))
