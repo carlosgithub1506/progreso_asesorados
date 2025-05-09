@@ -50,3 +50,40 @@ if uploaded_file is not None:
     ax.legend()
     st.pyplot(fig)
 
+
+        # --- Gráficos filtrables por Día y Grupo Muscular ---
+    st.subheader("📊 Visualización Filtrada de la Rutina de Entrenamiento")
+
+    # Leer y limpiar
+    df_rutina = pd.read_excel(uploaded_file, engine="odf", sheet_name="Rutina")
+    df_rutina_limpia = df_rutina.dropna(subset=["Ejercicio"])
+
+    if not df_rutina_limpia.empty:
+        dias = df_rutina_limpia["Día"].dropna().unique()
+        dia_seleccionado = st.selectbox("Seleccioná un día de entrenamiento", sorted(dias))
+
+        grupos = df_rutina_limpia[df_rutina_limpia["Día"] == dia_seleccionado]["Grupo Muscular"].dropna().unique()
+        grupo_seleccionado = st.selectbox("Seleccioná un grupo muscular", sorted(grupos))
+
+        ejercicios = df_rutina_limpia[
+            (df_rutina_limpia["Día"] == dia_seleccionado) &
+            (df_rutina_limpia["Grupo Muscular"] == grupo_seleccionado)
+        ]
+
+        st.markdown(f"### Ejercicios para **{grupo_seleccionado}** el día **{dia_seleccionado}**")
+
+        for _, row in ejercicios.iterrows():
+            ejercicio = row["Ejercicio"]
+            valores = row[["Series", "Repeticiones", "Peso (kg)", "Descanso (min)"]]
+
+            if valores.notnull().all():
+                st.markdown(f"**{ejercicio}**")
+                fig, ax = plt.subplots(figsize=(6, 3))
+                valores.plot(kind="bar", ax=ax, color=["steelblue", "orange", "green", "red"])
+                ax.set_ylabel("Valor")
+                ax.set_xticklabels(valores.index, rotation=45)
+                ax.set_title("")
+                ax.grid(True)
+                st.pyplot(fig)
+
+
