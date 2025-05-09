@@ -70,7 +70,7 @@ if id_usuario:
             st.dataframe(df_rutina_limpia)
 
             # === FILTRO DE RUTINA ===
-            st.subheader("🎯 Visualización Filtrada por Día")
+            st.subheader("Visualización Filtrada por Día")
 
             if not df_rutina_limpia.empty:
                 dias = df_rutina_limpia["Día"].dropna().unique()
@@ -79,7 +79,7 @@ if id_usuario:
                 if dia_seleccionado:
                     ejercicios_dia = df_rutina_limpia[df_rutina_limpia["Día"] == dia_seleccionado]
 
-                    st.markdown(f"### 📌 Ejercicios para el día **{dia_seleccionado}**")
+                    st.markdown(f"###Ejercicios para el día **{dia_seleccionado}**")
 
                     st.subheader("📋 Tabla de ejercicios del día")
                     st.dataframe(ejercicios_dia[["Ejercicio", "Grupo Muscular", "Series", "Repeticiones", "Peso (kg)", "Descanso (min)"]].reset_index(drop=True))
