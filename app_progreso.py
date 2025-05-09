@@ -24,7 +24,7 @@ if uploaded_file is not None:
     st.dataframe(df)
 
     # Graficar medidas
-    columnas = ["Peso (kg)", "Pecho (cm)", "Cintura (cm)", "Cadera (cm)", "Brazo (cm)", "Pierna (cm)"]
+    columnas = ["Peso (kg)", "Pecho (cm)", "Cintura (cm)", "Gluteos (cm)", "Brazo (cm)", "Pierna (cm)"]
     for col in columnas:
         if col in df.columns:
             st.subheader(f"Evolución de {col}")
