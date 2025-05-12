@@ -142,4 +142,4 @@ if id_usuario:
       
 
     else:
-        st.error("❌ No se encontró un archivo para ese ID. Verificá el código ingresado o consultá con tu entrenador!.")
+        st.error("❌ No se encontró un archivo para ese ID. Verificá el código ingresado o consultá con tu entrenador!!!.")
