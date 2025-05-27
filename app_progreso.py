@@ -8,8 +8,9 @@ import pyexcel_ods3 as ods
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-# Título
-st.title("Seguimiento y evolución del plan de entrenamiento")
+st.markdown("<h1 style='color: #fc4817;'>FitTrapp</h1>", unsafe_allow_html=True)
+
+st.subheader("Seguimiento y evolución del plan de entrenamiento")
 
 # Ingreso del ID
 id_usuario = st.text_input("🆔 Ingresá tu ID personal para ver tu rutina y evolución")
@@ -144,9 +145,10 @@ if id_usuario:
   
 
 # === REGISTRO DE PROGRESO DE EJERCICIO ===
-st.header("📌 Registro de Progreso Personalizado")
+
 
 if id_usuario and 'df_rutina_limpia' in locals() and not df_rutina_limpia.empty:
+    st.markdown("#### 📌 Registro de Progreso Personalizado")
     dias = df_rutina_limpia["Día"].dropna().unique()
     dia_seleccionado_prog = st.selectbox("🗓 Seleccioná el día de rutina para registrar tu progreso", sorted(dias), key="dia_prog")
 
@@ -159,7 +161,7 @@ if id_usuario and 'df_rutina_limpia' in locals() and not df_rutina_limpia.empty:
             num_series = st.number_input("📌 Ingresá la cantidad de series realizadas", min_value=1, max_value=10, value=3)
             fecha_actual = datetime.now().strftime("%Y-%m-%d")
 
-            st.subheader(f"✍️ Ingresá los datos de {ejercicio_seleccionado} - {fecha_actual}")
+            st.markdown(f"#### ✍️ Ingresá los datos de {ejercicio_seleccionado} - {fecha_actual}")
 
             repeticiones = []
             peso = []
@@ -182,7 +184,7 @@ if id_usuario and 'df_rutina_limpia' in locals() and not df_rutina_limpia.empty:
                 progreso_path = os.path.join(base_path, f"{id_usuario}_{ejercicio_seleccionado}.ods")
 
                 fila_fecha = ["Fecha", fecha_actual]
-                filas_nuevas = [["Serie", "Repeticiones", "Peso (kg)", "Descanso (seg)"]]
+                filas_nuevas = [["Serie", "Repeticiones", "Peso (kg)", "Descanso (minutos)"]]
                 for i in range(int(num_series)):
                     filas_nuevas.append([i + 1, repeticiones[i], peso[i], descanso[i]])
 
@@ -207,7 +209,7 @@ if id_usuario and 'df_rutina_limpia' in locals() and not df_rutina_limpia.empty:
                 st.success("✅ Progreso guardado correctamente.")
 
             # === GRAFICAR PROGRESO HISTÓRICO ===
-            st.subheader("📊 Evolución del Ejercicio en el Tiempo")
+            st.markdown("#### 📊 Evolución del Ejercicio en el Tiempo")
 
             try:
                 progreso_path = os.path.join(base_path, f"{id_usuario}_{ejercicio_seleccionado}.ods")
@@ -238,7 +240,7 @@ if id_usuario and 'df_rutina_limpia' in locals() and not df_rutina_limpia.empty:
                     df_progreso = pd.DataFrame(registros)
                     df_progreso["Fecha"] = pd.to_datetime(df_progreso["Fecha"])
 
-                    with st.expander("📈 Evolución de Peso Usado por Fecha"):
+                    with st.expander("##### 📈 Evolución de Peso Usado por Fecha"):
                         fig, ax = plt.subplots(figsize=(8, 4))
                         df_peso = df_progreso.groupby("Fecha")["Peso"].mean()
                         ax.plot(df_peso.index, df_peso.values, marker='o', label="Peso Promedio")
