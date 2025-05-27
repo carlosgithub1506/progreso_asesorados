@@ -270,4 +270,4 @@ if id_usuario and 'df_rutina_limpia' in locals() and not df_rutina_limpia.empty:
       
 
     else:
-        st.error("❌ No se encontró un archivo para ese ID. Verificá el código ingresado o consultá con tu entrenador!!!.")
+        st.error("❌ No se encontró un archivo para ese ID. Verificá el código ingresado o consultá con tu entrenador!!!!.")
