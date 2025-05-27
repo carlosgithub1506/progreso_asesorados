@@ -2,6 +2,8 @@ import pandas as pd
 import streamlit as st
 import matplotlib
 import os
+from datetime import datetime
+import pyexcel_ods3 as ods
 
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -138,6 +140,130 @@ if id_usuario:
         except Exception as e:
             st.warning("⚠️ No se pudo cargar la hoja de rutina.")
             st.text(str(e))
+
+  
+
+# === REGISTRO DE PROGRESO DE EJERCICIO ===
+st.header("📌 Registro de Progreso Personalizado")
+
+if id_usuario and 'df_rutina_limpia' in locals() and not df_rutina_limpia.empty:
+    dias = df_rutina_limpia["Día"].dropna().unique()
+    dia_seleccionado_prog = st.selectbox("🗓 Seleccioná el día de rutina para registrar tu progreso", sorted(dias), key="dia_prog")
+
+    if dia_seleccionado_prog:
+        ejercicios_dia_prog = df_rutina_limpia[df_rutina_limpia["Día"] == dia_seleccionado_prog]
+        ejercicios = ejercicios_dia_prog["Ejercicio"].dropna().unique()
+        ejercicio_seleccionado = st.selectbox("🏋️ Elegí un ejercicio para registrar", sorted(ejercicios))
+
+        if ejercicio_seleccionado:
+            num_series = st.number_input("📌 Ingresá la cantidad de series realizadas", min_value=1, max_value=10, value=3)
+            fecha_actual = datetime.now().strftime("%Y-%m-%d")
+
+            st.subheader(f"✍️ Ingresá los datos de {ejercicio_seleccionado} - {fecha_actual}")
+
+            repeticiones = []
+            peso = []
+            descanso = []
+
+            for i in range(int(num_series)):
+                col1, col2, col3 = st.columns(3)
+                with col1:
+                    reps = st.number_input(f"Repeticiones Serie {i+1}", min_value=0, key=f"reps_{i}")
+                with col2:
+                    kg = st.number_input(f"Peso (kg) Serie {i+1}", min_value=0.0, key=f"peso_{i}")
+                with col3:
+                    rest = st.number_input(f"Descanso (seg) Serie {i+1}", min_value=0.0, key=f"desc_{i}")
+
+                repeticiones.append(reps)
+                peso.append(kg)
+                descanso.append(rest)
+
+            if st.button("💾 Guardar Progreso"):
+                progreso_path = os.path.join(base_path, f"{id_usuario}_{ejercicio_seleccionado}.ods")
+
+                fila_fecha = ["Fecha", fecha_actual]
+                filas_nuevas = [["Serie", "Repeticiones", "Peso (kg)", "Descanso (seg)"]]
+                for i in range(int(num_series)):
+                    filas_nuevas.append([i + 1, repeticiones[i], peso[i], descanso[i]])
+
+                if os.path.exists(progreso_path):
+                    try:
+                        datos_existentes = ods.get_data(progreso_path)
+                        hoja = list(datos_existentes.keys())[0]
+                        datos_existentes[hoja].append([""])
+                        datos_existentes[hoja].append(fila_fecha)
+                        datos_existentes[hoja].extend(filas_nuevas)
+                        ods.save_data(progreso_path, datos_existentes)
+                    except Exception as e:
+                        st.error(f"Error al actualizar el archivo: {e}")
+                else:
+                    hoja = "Progreso"
+                    datos_nuevos = {hoja: [fila_fecha] + filas_nuevas}
+                    try:
+                        ods.save_data(progreso_path, datos_nuevos)
+                    except Exception as e:
+                        st.error(f"Error al crear el archivo: {e}")
+
+                st.success("✅ Progreso guardado correctamente.")
+
+            # === GRAFICAR PROGRESO HISTÓRICO ===
+            st.subheader("📊 Evolución del Ejercicio en el Tiempo")
+
+            try:
+                progreso_path = os.path.join(base_path, f"{id_usuario}_{ejercicio_seleccionado}.ods")
+                if os.path.exists(progreso_path):
+                    datos_raw = ods.get_data(progreso_path)
+                    hoja = list(datos_raw.keys())[0]
+                    datos = datos_raw[hoja]
+
+                    registros = []
+                    fecha_actual = None
+                    for fila in datos:
+                        if not fila:
+                            continue
+                        if fila[0] == "Fecha":
+                            fecha_actual = fila[1]
+                        elif isinstance(fila, list) and len(fila) == 4 and fila[0] != "Serie":
+                            try:
+                                registros.append({
+                                    "Fecha": fecha_actual,
+                                    "Serie": int(fila[0]),
+                                    "Repeticiones": int(fila[1]),
+                                    "Peso": float(fila[2]),
+                                    "Descanso": float(fila[3])
+                                })
+                            except:
+                                pass
+
+                    df_progreso = pd.DataFrame(registros)
+                    df_progreso["Fecha"] = pd.to_datetime(df_progreso["Fecha"])
+
+                    with st.expander("📈 Evolución de Peso Usado por Fecha"):
+                        fig, ax = plt.subplots(figsize=(8, 4))
+                        df_peso = df_progreso.groupby("Fecha")["Peso"].mean()
+                        ax.plot(df_peso.index, df_peso.values, marker='o', label="Peso Promedio")
+                        ax.set_title("Peso Promedio por Fecha")
+                        ax.set_xlabel("Fecha")
+                        ax.set_ylabel("Peso (kg)")
+                        ax.grid(True)
+                        ax.legend()
+                        st.pyplot(fig)
+
+                    with st.expander("📈 Evolución de Repeticiones Totales por Fecha"):
+                        fig, ax = plt.subplots(figsize=(8, 4))
+                        df_reps = df_progreso.groupby("Fecha")["Repeticiones"].sum()
+                        ax.plot(df_reps.index, df_reps.values, marker='o', color="orange", label="Reps Totales")
+                        ax.set_title("Repeticiones Totales por Fecha")
+                        ax.set_xlabel("Fecha")
+                        ax.set_ylabel("Repeticiones")
+                        ax.grid(True)
+                        ax.legend()
+                        st.pyplot(fig)
+
+            except Exception as e:
+                st.warning("⚠️ No se pudo leer o graficar los datos de progreso.")
+                st.text(str(e))
+
 
       
 
